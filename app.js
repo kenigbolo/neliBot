@@ -53,7 +53,7 @@ function checkMessage(message, valueToCheck) {
 }
 
 function getInfoRegData(session, company, action) {
-    var host = "http://nellychatbot-randomnames.azurewebsites.net/api"
+    var host = "http://nellychatbot-randomnames.azurewebsites.net/api";
     var params = "?company=%cm&action=%ac".replace(/%cm/, company).replace(/%ac/, action);
     var query = host + params
     console.log(query);
@@ -81,12 +81,12 @@ function getInfoRegData(session, company, action) {
 }
 
 function getCompanyName(message){
-  var indexValue = message.indexOf("of ");
+  var indexValue = message.toLowerCase().lastIndexOf("of ");
   let companyName;
-  if (indexValue < 1) {
-    companyName = message.substring(message.lastIndexOf('on ')+3);
-  }else {
-    companyName = message.substring(message.lastIndexOf('of ')+3);
+  if (indexValue > 1) {
+      return message.substring(indexValue+3);
+  }else if (message.toLowerCase().lastIndexOf("on ") > 1) {
+      return message.substring(message.toLowerCase().lastIndexOf("on ")+3);
   }
   return companyName;
 }
@@ -96,40 +96,29 @@ function capitalize(str){
 }
 
 function defaultErrorMessage(session){
-  session.send(`Sorry I'm not so smart yet :D I'm still a work in progress :)`);
+  session.send(`I didn't understand your request. Ask me something like 'financial status of Pipedrive'`);
 }
 
 bot.dialog('/', function (session) {
     var message = session.message.text.toLowerCase();
-    if(checkMessage(message, 'hello')){
-      session.send(`Hey, How are you?`);
+    if(checkMessage(message, 'hello') || checkMessage(message, 'hi')){
+      session.send(`Hey, How are you? (wave)`);
     }else if(checkMessage(message, 'help')){
         session.send(`How can I help you?`);
-    }else if(checkMessage(message, 'api')){
-      session.send('Hang on a few seconds while we get you the required information');
-      http.get('http://api.fixer.io/latest', function(res){
-        var buffer = "";
-        res.on('data', function(chunk) {
-          buffer += chunk;
-        });
-
-        res.on('end', function(){
-          session.send(buffer);
-        });
-      });
-    }else if(checkMessage(message, 'information') || checkMessage(message, 'info')){
+    }else if(checkMessage(message, 'bye')){
+        session.send(`Have a nice day (wave)`);
+    }else if(checkMessage(message, 'board') || checkMessage(message, 'financial') || checkMessage(message, 'finance')){
       var name = session.message.user ? session.message.user.name : null;
       let companyName;
       if(checkMessage(message, 'board')){
-        session.send('Hang on a few seconds while we get you the required company board information');
         companyName = getCompanyName(message);
+        session.send('Hang on a few seconds while I get you %s board information', companyName);
         getInfoRegData(session, companyName, 'board');
       }else if (checkMessage(message, 'history')) {
         defaultErrorMessage(session);
       }else if (checkMessage(message, 'financial')) {
-        session.send('Hang on a few seconds while we get you the required financial information');
         companyName = getCompanyName(message);
-        console.log(companyName);
+        session.send('Hang on a few seconds while I get you %s financial information', companyName);
         getInfoRegData(session, companyName, 'financial');
       }else if (checkMessage(message, 'credit')) {
         defaultErrorMessage(session);
