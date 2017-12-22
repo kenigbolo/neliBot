@@ -125,7 +125,4 @@ bot.dialog('/', function (session) {
       }else {
         session.send('Hey %s... What kind of information exactly do you want and for what company?', capitalize(name) || 'there');
       }
-      }else{
-        defaultErrorMessage(session);
-      }
 });
