@@ -24,7 +24,7 @@
   "homepage": "https://github.com/kenigbolo/neliBot#readme",
   "dependencies": {
     "botbuilder": "^4.2.1",
-    "nodemon": "^1.11.0",
+    "nodemon": "^2.0.0",
     "restify": "^8.0.0"
   }
 }
